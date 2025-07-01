@@ -1,0 +1,112 @@
+[
+  {
+    "tourName": "Sar Planina Adventure",
+    "tours": ["planinarenje", "kampovanje", "istraživanje"],
+    "totalPrice": 450,
+    "startDate": "2025-07-10",
+    "endDate": "2025-07-15",
+    "location": "Sar Planina",
+    "difficulty": "medium",
+    "maxGroupSize": 15,
+    "guide": "Milan Petrović"
+  },
+  {
+    "tourName": "Tara Rafting Experience",
+    "tours": ["rafting", "plivanje", "roštiljanje"],
+    "totalPrice": 390,
+    "startDate": "2025-08-01",
+    "endDate": "2025-08-05",
+    "location": "Tara",
+    "difficulty": "hard",
+    "maxGroupSize": 12,
+    "guide": "Jovana Simić"
+  },
+  {
+    "tourName": "Zlatibor Relax Tour",
+    "tours": ["šetnja", "spa", "degustacija hrane"],
+    "totalPrice": 300,
+    "startDate": "2025-06-20",
+    "endDate": "2025-06-23",
+    "location": "Zlatibor",
+    "difficulty": "easy",
+    "maxGroupSize": 20,
+    "guide": "Nikola Vuković"
+  },
+  {
+    "tourName": "Kopaonik Ski Adventure",
+    "tours": ["skijanje", "bordanje", "apres ski"],
+    "totalPrice": 600,
+    "startDate": "2025-12-15",
+    "endDate": "2025-12-22",
+    "location": "Kopaonik",
+    "difficulty": "medium",
+    "maxGroupSize": 25,
+    "guide": "Ivana Popov"
+  },
+  {
+    "tourName": "Đerdap National Park Trek",
+    "tours": ["planinarenje", "istorijske ture", "vožnja brodom"],
+    "totalPrice": 350,
+    "startDate": "2025-09-10",
+    "endDate": "2025-09-14",
+    "location": "Đerdap",
+    "difficulty": "medium",
+    "maxGroupSize": 10,
+    "guide": "Marko Lazić"
+  },
+  {
+    "tourName": "Vlasina Lake Escape",
+    "tours": ["plovidba", "pecanje", "roštilj"],
+    "totalPrice": 280,
+    "startDate": "2025-07-25",
+    "endDate": "2025-07-28",
+    "location": "Vlasinsko Jezero",
+    "difficulty": "easy",
+    "maxGroupSize": 8,
+    "guide": "Ana Ristić"
+  },
+  {
+    "tourName": "Fruška Gora Wine Hike",
+    "tours": ["planinarenje", "obilazak vinarija", "degustacija vina"],
+    "totalPrice": 320,
+    "startDate": "2025-10-02",
+    "endDate": "2025-10-05",
+    "location": "Fruška Gora",
+    "difficulty": "easy",
+    "maxGroupSize": 18,
+    "guide": "Stefan Nikolić"
+  },
+  {
+    "tourName": "Rtanj Mystery Tour",
+    "tours": ["uspon", "kampovanje", "istraživanje"],
+    "totalPrice": 400,
+    "startDate": "2025-08-18",
+    "endDate": "2025-08-21",
+    "location": "Rtanj",
+    "difficulty": "hard",
+    "maxGroupSize": 10,
+    "guide": "Mira Đorđević"
+  },
+  {
+    "tourName": "Stara Planina Snow Trek",
+    "tours": ["hodanje po snegu", "sankanje", "sneg gradovi"],
+    "totalPrice": 500,
+    "startDate": "2025-01-10",
+    "endDate": "2025-01-15",
+    "location": "Stara Planina",
+    "difficulty": "medium",
+    "maxGroupSize": 14,
+    "guide": "Željko Ilić"
+  },
+  {
+    "tourName": "Uvac River Canyon Tour",
+    "tours": ["vožnja čamcem", "posmatranje ptica", "foto safari"],
+    "totalPrice": 370,
+    "startDate": "2025-07-05",
+    "endDate": "2025-07-08",
+    "location": "Uvac",
+    "difficulty": "easy",
+    "maxGroupSize": 16,
+    "guide": "Kristina Pavlović"
+  }
+]
