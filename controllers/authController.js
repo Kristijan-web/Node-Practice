@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const catchAsync = require("../utills/catchAsync");
 const AppError = require("../utills/appError");
+const sendMail = require("../utills/email");
 
 const tokenJWT = function (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -107,8 +108,6 @@ const restrictTo = function (...roles) {
   };
 };
 
-// napravi funkciju forgotPassword i resetPassword
-
 const forgotPassword = catchAsync(async (req, res, next) => {
   // korisnik prosledjuje email preeeeeeko body-a
 
@@ -116,16 +115,37 @@ const forgotPassword = catchAsync(async (req, res, next) => {
   if (!user) {
     return next(new AppError("User does not exist", 404));
   }
-  // treba neko da save-ujem u bazi podatke koji si izmenjeni
   const resetToken = user.createUserToken();
 
+  // upisivanje tokena i njegovo vreme trajanja u bazu
   await user.save({ validateBeforeSave: false });
-  // sada kada vidim da user postoji pravim token koristeci instance method
+
+  // slanje mail-a korisniku:
+  const reset_link = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/users/reset-password/${resetToken}`;
+  const message = `Please click the link: ${reset_link} to reset password.`;
+
+  const subject = "Your reset token, valid for the next 10 minutes";
+
+  try {
+    await sendMail({
+      email: user.email,
+      subject,
+      message,
+    });
+  } catch (err) {
+    user.passwordResetToken = undefined;
+    user.resetTokenValidateDuration = undefined;
+    await user.save({ validateBeforeSave: false });
+    return next(
+      new AppError(`Something went wrong with mailing service, ${err}`, 500)
+    );
+  }
+
   res.status(200).json({
-    message: "success",
-    data: {
-      resetToken,
-    },
+    status: "success",
+    message: "Check email to reset your password",
   });
 });
 
