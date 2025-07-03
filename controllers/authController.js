@@ -14,12 +14,15 @@ const tokenJWT = function (id) {
 const login = catchAsync(async (req, res, next) => {
   // prvo da dohvatimo usera za prosledjeni email
 
-  const user = await User.findOne({}).select("+password");
+  const user = await User.findOne({ email: req?.body?.email }).select(
+    "+password"
+  );
   // sada pravimo instance method za proveru sifre
   if (!user || !(await user.checkPassword(req.body.password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
   const token = tokenJWT(user._id);
+
   res.json({
     status: "success",
     token,
@@ -72,7 +75,7 @@ const protect = catchAsync(async (req, res, next) => {
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-  // Sta ako je korisnik obrisan a JWT token jos postoji kod njega?
+  // Sta ako je korisniku obrisan nalog a JWT token jos postoji kod njega?
 
   const currentUser = await User.findById(decoded.id);
 
@@ -185,6 +188,40 @@ const resetPassword = catchAsync(async (req, res, next) => {
   });
 });
 
+const updatePassword = catchAsync(async (req, res, next) => {
+  // Bolje resenje od ovog ispod je da se id usera uzme iz req.user koji se dobija od protect middleware (on radi autorizaciju)
+  // 1. pronadji usera na osnovu id-a iz jwt tokena
+  const decoded = jwt.verify(
+    req.headers.authorization.split(" ")[1],
+    process.env.JWT_SECRET
+  );
+
+  const password = req?.body?.password;
+  const user = await User.findOne({ _id: decoded.id }).select("+password");
+
+  // 1.6 Da li user uopste postoji, mozda je obrisan u medjuvremenu
+
+  if (!user) {
+    return next(new AppError("User not found", 404));
+  }
+  // 2. Proveri da li se uneta sifra poklapa sa onom u bazi
+  if (!user.checkPassword(password, user.password)) {
+    return next(new AppError("Incorrect password", 401));
+  }
+
+  // 3. Proveri da li se nova sifrma poklapa sa ponovljenom novom sifru
+  user.password = req.body.newPassword;
+  user.passwordConfirm = req.body.confirmNewPassword;
+  await user.save();
+
+  const jwtToken = tokenJWT(user._id);
+
+  res.status(200).json({
+    status: "success",
+    token: jwtToken,
+  });
+});
+
 module.exports = {
   signup,
   login,
@@ -192,4 +229,5 @@ module.exports = {
   restrictTo,
   forgotPassword,
   resetPassword,
+  updatePassword,
 };
