@@ -68,6 +68,14 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
+
+  next();
+});
+
 userSchema.pre("findOneAndUpdate", async function (next) {
   // sta ako je korisnik izvrsio update ali nije promenio sifru??
   if (this.isModified("password")) {
@@ -104,10 +112,12 @@ userSchema.methods.createUserToken = function () {
   const resetToken = crypto.randomBytes(32).toString("hex");
 
   // hashovan token treba da se cuva u bazi
+  console.log("Evo ga napravljen token " + resetToken);
   this.passwordResetToken = crypto
     .createHash("sha256")
     .update(resetToken)
     .digest("hex");
+
   this.resetTokenValidateDuration = Date.now() + 10 * 60 * 1000;
 
   return resetToken;

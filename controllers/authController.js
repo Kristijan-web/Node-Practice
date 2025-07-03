@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const catchAsync = require("../utills/catchAsync");
 const AppError = require("../utills/appError");
 const sendMail = require("../utills/email");
+const crypto = require("crypto");
 
 const tokenJWT = function (id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -149,7 +150,40 @@ const forgotPassword = catchAsync(async (req, res, next) => {
   });
 });
 
-const resetPassword = function (req, res, next) {};
+// da li je trenutno vreme manje od vremena upisanog u bazi -> yes -> Onda je token validan, suprotno nije
+
+const resetPassword = catchAsync(async (req, res, next) => {
+  // 0.5 Hashuje se prosledjeni token i onda se hashovani poredi sa hashovanim u bazi
+
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  // 1. pronalazimo korisnika na osnovu tokena i proveravamo da li je token istekao
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    resetTokenValidateDuration: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return next(new AppError("Token has expired"));
+  }
+
+  // 2. uzimamo novu sifru koja je poslata preko body-a i upisujemo u bazu, takodje menjamo i polje changedPasswordAt - 1 sekunda
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.resetTokenValidateDuration = undefined;
+  await user.save();
+
+  const token = tokenJWT(user._id);
+  // 3. Vracamo korisniku jwt token
+  res.status(200).json({
+    status: "success",
+    token,
+  });
+});
 
 module.exports = {
   signup,
