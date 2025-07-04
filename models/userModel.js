@@ -76,14 +76,16 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-userSchema.pre("findOneAndUpdate", async function (next) {
-  // sta ako je korisnik izvrsio update ali nije promenio sifru??
-  if (this.isModified("password")) {
-    this.password = await bcrypt.hash(this.password, 12);
-    this.passwordConfirm = undefined; // uklanjam passwordConfirm polje sto znaci da nece biti sacuvano u bazi
-  }
-  next();
-});
+// OVO ISPOD JE TOTALNO NE POTREBNO I MOZE SE OBRISATI
+// userSchema.pre("findOneAndUpdate", async function (next) {
+//   // sta ako je korisnik izvrsio update ali nije promenio sifru??
+//   console.log("EEEEE EVO UPAO");
+//   if (this.isModified("password")) {
+//     this.password = await bcrypt.hash(this.password, 12);
+//     this.passwordConfirm = undefined; // uklanjam passwordConfirm polje sto znaci da nece biti sacuvano u bazi
+//   }
+//   next();
+// });
 
 userSchema.methods.checkPassword = async function (
   candidatePassword,
