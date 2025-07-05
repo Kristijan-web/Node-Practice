@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema({
   resetTokenValidateDuration: {
     type: Date,
   },
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 // Treba mi pre save document middleware da bih ukllonio passordConfirm polje  i da bih sifru hash-ovo
@@ -75,17 +80,6 @@ userSchema.pre("save", function (next) {
 
   next();
 });
-
-// OVO ISPOD JE TOTALNO NE POTREBNO I MOZE SE OBRISATI
-// userSchema.pre("findOneAndUpdate", async function (next) {
-//   // sta ako je korisnik izvrsio update ali nije promenio sifru??
-//   console.log("EEEEE EVO UPAO");
-//   if (this.isModified("password")) {
-//     this.password = await bcrypt.hash(this.password, 12);
-//     this.passwordConfirm = undefined; // uklanjam passwordConfirm polje sto znaci da nece biti sacuvano u bazi
-//   }
-//   next();
-// });
 
 userSchema.methods.checkPassword = async function (
   candidatePassword,
@@ -125,6 +119,15 @@ userSchema.methods.createUserToken = function () {
   return resetToken;
 };
 
+userSchema.pre("find", function (next) {
+  // hocu da kada se uradi find da se ne vrate useri koji imaju active: false
+  this.find({
+    active: {
+      $ne: "false",
+    },
+  });
+  next();
+});
 const User = mongoose.model("users", userSchema);
 
 module.exports = User;

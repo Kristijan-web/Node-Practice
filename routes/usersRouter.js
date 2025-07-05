@@ -3,6 +3,7 @@ const {
   getUsers,
   getUser,
   updateUser,
+  deleteUser,
 } = require("../controllers/usersController");
 const {
   signup,
@@ -19,7 +20,9 @@ userRouter.post("/login", login);
 userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/reset-password/:token", resetPassword);
 userRouter.patch("/update-password", updatePassword);
+
 userRouter.patch("/updateUser", protect, updateUser);
+userRouter.delete("/deleteUser", protect, deleteUser);
 
 userRouter.get("/", getUsers);
 userRouter.get("/:id", getUser);

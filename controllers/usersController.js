@@ -68,4 +68,21 @@ const updateUser = catchAsync(async function (req, res, next) {
   });
 });
 
-module.exports = { getUsers, getUser, updateUser };
+const deleteUser = catchAsync(async (req, res, next) => {
+  // ovaj endpoint poziva user klikom na dugme
+  // brisanje usera je setovanje polja active na false
+  // dohvati usera na osnovu id-a
+
+  await User.findByIdAndUpdate(req.user.id, {
+    active: "false",
+  });
+
+  res.status(204).json({
+    status: "success",
+    data: {
+      user: null,
+    },
+  });
+});
+
+module.exports = { getUsers, getUser, updateUser, deleteUser };
