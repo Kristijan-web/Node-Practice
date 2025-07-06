@@ -5,8 +5,7 @@ const AppError = require("./utills/appError");
 const globalErrorHandling = require("./controllers/errorController");
 const expressRateLimit = require("express-rate-limit");
 const helmet = require("helmet");
-const mongoSanitize = require("express-mongo-sanitize");
-const xssClean = require("xss-clean");
+const mongoSanitize = require("mongo-sanitize");
 const hpp = require("hpp");
 
 const app = express();
@@ -22,11 +21,20 @@ app.use("/api", limiter);
 // Helmet sluzi da postavi security headers
 app.use(helmet());
 
-// Stiti od Cross Site Scripting Napada, cisti user input od HTML-a <div>Cao</div> = !div!Cao@div@
-app.use(xssClean());
-
 // Ne dozvoljava da input sadrzi $ i . znakove, onda korisinik nece moci da ubaci {$gt: ""}
-app.use(mongoSanitize());
+const sanitizeInput = (obj) => {
+  for (let key in obj) {
+    if (typeof obj[key] === "object") sanitizeInput(obj[key]);
+    else obj[key] = mongoSanitize(obj[key]);
+  }
+};
+
+app.use((req, res, next) => {
+  if (req.body) sanitizeInput(req.body);
+  if (req.query) sanitizeInput(req.query);
+  if (req.params) sanitizeInput(req.params);
+  next();
+});
 
 // sprecava parametar pollution, slanje vise istih query parametara, naravno ako dozvoljavamo vise parametara onda treba da ih whitelist-ujemo
 app.use(hpp());
@@ -44,4 +52,5 @@ app.all(/(.*)/, (req, res, next) => {
 });
 
 app.use(globalErrorHandling);
-module.exports = app;
+
+module.exports = { app };
