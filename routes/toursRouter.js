@@ -6,6 +6,8 @@ const {
   updateTour,
   paramMiddleware,
   DifficultyGuides,
+  tourImages,
+  resizeTourImages,
 } = require("../controllers/toursController");
 const { protect, restrictTo } = require("../controllers/authController");
 const toursRouter = express.Router();
@@ -13,9 +15,9 @@ const toursRouter = express.Router();
 toursRouter.param("id", paramMiddleware);
 
 toursRouter.get("/", protect, restrictTo("admin"), getTours);
-toursRouter.post("/", createTour);
+toursRouter.post("/", protect, tourImages, resizeTourImages, createTour);
 toursRouter.get("/:id", getTour);
-toursRouter.patch("/:id", updateTour);
+toursRouter.patch("/:id", protect, tourImages, resizeTourImages, updateTour);
 toursRouter.get("/difficultyGuides", DifficultyGuides);
 
 module.exports = toursRouter;

@@ -4,7 +4,7 @@ const {
   getUser,
   updateUser,
   deleteUser,
-  upload,
+  multerUpload,
   resizeImage,
 } = require("../controllers/usersController");
 const {
@@ -24,13 +24,7 @@ userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/reset-password/:token", resetPassword);
 userRouter.patch("/update-password", updatePassword);
 
-userRouter.patch(
-  "/updateUser",
-  protect,
-  upload.single("photo"),
-  resizeImage,
-  updateUser
-);
+userRouter.patch("/updateUser", protect, multerUpload, resizeImage, updateUser);
 userRouter.delete("/deleteUser", protect, deleteUser);
 
 userRouter.get("/", getUsers);

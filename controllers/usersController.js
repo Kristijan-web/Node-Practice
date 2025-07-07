@@ -3,6 +3,7 @@ const AppError = require("../utills/appError");
 const catchAsync = require("../utills/catchAsync");
 const multer = require("multer");
 const sharp = require("sharp");
+const filterBody = require("../utills/filterBody");
 
 // const multerStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {
@@ -30,9 +31,11 @@ const multerFilter = (req, file, cb) => {
 
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
+const multerUpload = upload.single("photo");
+
 const resizeImage = function (req, res, next) {
   if (!req.file) {
-    next();
+    return next();
   }
   // resizuj sliku
 
@@ -46,16 +49,6 @@ const resizeImage = function (req, res, next) {
 
   next();
 };
-
-function filterBody(obj, ...allowedFields) {
-  const newObj = {};
-  Object.keys(obj).forEach((el) => {
-    if (allowedFields.includes(el)) {
-      newObj[el] = obj[el];
-    }
-  });
-  return newObj;
-}
 
 const getUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
@@ -137,6 +130,6 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
-  upload,
+  multerUpload,
   resizeImage,
 };

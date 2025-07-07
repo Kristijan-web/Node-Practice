@@ -2,6 +2,67 @@ const Tour = require("../models/toursModel");
 const tourModel = require("../models/toursModel");
 const ApiFeatures = require("../utills/apiFeatures");
 const AppError = require("../utills/appError");
+const multer = require("multer");
+const sharp = require("sharp");
+const filterBody = require("../utills/filterBody");
+
+const multerStorage = multer.memoryStorage();
+
+const multerFilter = (req, file, cb) => {
+  // ovde je cilj da se potvrdi da je u pitanju slika a ne neki fajl
+  if (file.mimetype.startsWith("image")) {
+    // prvi parametar sluzi da se prosledi greska ali ako je korisnik stvarno prosledio sliku onda stavljam null koji znaci da nema greske
+    cb(null, true);
+  } else {
+    cb(new AppError("Provided file is not an image", 400), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+const tourImages = upload.fields([
+  {
+    name: "tourCoverImage",
+    max: 1,
+  },
+  {
+    name: "tourImages",
+    max: 3,
+  },
+]);
+
+const resizeTourImages = catchAsync(async (req, res, next) => {
+  const tourCoverImage = req?.files?.tourCoverImage[0];
+  const tourImages = req?.files?.tourImages;
+
+  if (!tourCoverImage || !tourImages) {
+    return next();
+  }
+
+  // obe konstante cuvaju niz
+
+  tourCoverImage.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(tourCoverImage.buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${tourCoverImage.filename}`);
+
+  Promise.all(
+    tourImages.map(async (image) => {
+      image.filename = `tour-${req.user.id}-${Date.now()}-${i}.jpeg`;
+      await sharp(image.buffer)
+        .resize(500, 500)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${image.filename}`);
+    })
+  );
+
+  next();
+});
+
 // Funkcija prebacena u utills/apiFeatures
 // function parseQuery(query) {
 //   delete query.sort;
@@ -77,9 +138,27 @@ const getTour = catchAsync(async (req, res, next) => {
 });
 
 const createTour = catchAsync(async (req, res, next) => {
-  const data = req.body;
+  console.log(req.files.tourCoverImage[0].filename);
+  const filteredBody = filterBody(
+    req.body,
+    "tourName",
+    "tourCoverImage",
+    "tourImages",
+    "totalPrice",
+    "guide",
+    "location",
+    "difficulty",
+    "maxGroupSize",
+    "startdate",
+    "endDate",
+    "tours"
+  );
+  if (req.files) {
+    (req.body.tourCoverImage = req.files.tourCoverImage[0].filename),
+      (req.body.tourImages = req.files.tourImages);
+  }
 
-  const newTour = await Tour.create(data);
+  const newTour = await Tour.create(req.body);
 
   res.status(201).json({
     status: "success",
@@ -90,9 +169,20 @@ const createTour = catchAsync(async (req, res, next) => {
 });
 
 const updateTour = catchAsync(async (req, res, next) => {
+  const filteredBody = filterBody(
+    req.body,
+    "tourName",
+    "tourCoverImage",
+    "tourImages",
+    "totalPrice"
+  );
+  if (req.files) {
+    (req.body.tourCoverImage = req.files.tourCoverImage[0].filename),
+      (req.body.tourImages = req.files.tourImages);
+  }
   const updatedTour = await tourModel.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    filteredBody,
     {
       new: true,
       runValidators: true,
@@ -151,4 +241,6 @@ module.exports = {
   updateTour,
   paramMiddleware,
   DifficultyGuides,
+  tourImages,
+  resizeTourImages,
 };

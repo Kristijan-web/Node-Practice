@@ -14,6 +14,12 @@ const tourSchema = new mongoose.Schema(
         message: "TourName must start with a capital letter",
       },
     },
+    tourCoverImage: {
+      type: String,
+    },
+    tourImages: {
+      type: ["String"],
+    },
     tours: {
       type: [String],
       validate: {
@@ -30,11 +36,9 @@ const tourSchema = new mongoose.Schema(
     },
     startDate: {
       type: Date,
-      required: [true, "Start date is required"],
     },
     endDate: {
       type: Date,
-      required: [true, "End date is required"],
       validate: {
         validator: function (val) {
           return val > this.startDate;
