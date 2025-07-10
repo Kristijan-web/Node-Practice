@@ -50,7 +50,7 @@ const resizeTourImages = catchAsync(async (req, res, next) => {
     .toFile(`public/img/tours/${tourCoverImage.filename}`);
 
   Promise.all(
-    tourImages.map(async (image) => {
+    tourImages.map(async (image, i) => {
       image.filename = `tour-${req.user.id}-${Date.now()}-${i}.jpeg`;
       await sharp(image.buffer)
         .resize(500, 500)
@@ -138,7 +138,6 @@ const getTour = catchAsync(async (req, res, next) => {
 });
 
 const createTour = catchAsync(async (req, res, next) => {
-  console.log(req.files.tourCoverImage[0].filename);
   const filteredBody = filterBody(
     req.body,
     "tourName",
@@ -154,11 +153,16 @@ const createTour = catchAsync(async (req, res, next) => {
     "tours"
   );
   if (req.files) {
-    (req.body.tourCoverImage = req.files.tourCoverImage[0].filename),
-      (req.body.tourImages = req.files.tourImages);
-  }
+    filteredBody.tourCoverImage = req.files.tourCoverImage[0].filename;
+    // ovde ispod mora niz
+    const tourImagesNames = [];
+    req.files.tourImages.forEach((image) => {
+      tourImagesNames.push(image.filename);
+    });
 
-  const newTour = await Tour.create(req.body);
+    filteredBodytourImages = tourImagesNames;
+  }
+  const newTour = await Tour.create(filteredBody);
 
   res.status(201).json({
     status: "success",

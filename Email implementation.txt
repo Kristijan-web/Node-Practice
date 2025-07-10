@@ -1,0 +1,4 @@
+Imacu u utills email.js, tu ce biti Email klasa 
+
+Za tesitranje email-ova koristi mailtrap
+Za slanje mail-a korisnicima koristi sendGrid
