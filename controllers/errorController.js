@@ -1,3 +1,10 @@
+// Stripe kartice za testiranje gresaka
+// Generic decline	4000000000000002
+// Insufficient funds decline	4000000000009995
+// Expired card decline	4000000000000069
+// Incorrect number decline	4242424242424241
+//
+
 const AppError = require("../utills/appError");
 
 function handleInvalidTokenError() {
