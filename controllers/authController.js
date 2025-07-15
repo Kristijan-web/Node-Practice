@@ -22,7 +22,7 @@ const login = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
   const token = tokenJWT(user._id);
-
+  // ovde bi trebalo da se salje http-only cookie u kom je JWT
   res.json({
     status: "success",
     token,

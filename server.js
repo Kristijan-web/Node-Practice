@@ -10,14 +10,18 @@ const CONNECTION_STRING = process.env.CONNECTION_STRING.replace(
   process.env.DB_PASSWORD
 );
 
-mongoose
-  .connect(CONNECTION_STRING)
-  .then(() => {
-    console.log("DB connection successful");
-  })
-  .catch((err) => {
-    console.error("DB connection error:", err);
-  });
+const connectToDB = async function () {
+  await mongoose
+    .connect(CONNECTION_STRING)
+    .then(() => {
+      console.log("DB connection successful");
+    })
+    .catch((err) => {
+      console.error("DB connection error:", err);
+    });
+};
+
+connectToDB();
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

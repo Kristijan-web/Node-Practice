@@ -4,7 +4,6 @@ const catchAsync = require("../utills/catchAsync");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const createSession = catchAsync(async (req, res, next) => {
-  console.log("hello");
   const tour = await Tour.findById(req.params.tourId);
 
   if (!tour) {
