@@ -5,7 +5,7 @@ const AppError = require("../utills/appError");
 const multer = require("multer");
 const sharp = require("sharp");
 const filterBody = require("../utills/filterBody");
-
+const { deleteOne } = require("./handlerFactory");
 const multerStorage = multer.memoryStorage();
 
 const multerFilter = (req, file, cb) => {
@@ -205,6 +205,8 @@ const updateTour = catchAsync(async (req, res, next) => {
   });
 });
 
+const deleteTour = deleteOne(Tour);
+
 async function DifficultyGuides(req, res) {
   // grupisi po difficulty i prikazi sve tourGuide-ove koji pripadaju tom difficulty-u
   const stats = await Tour.aggregate([
@@ -243,6 +245,7 @@ module.exports = {
   getTour,
   createTour,
   updateTour,
+  deleteTour,
   paramMiddleware,
   DifficultyGuides,
   tourImages,
